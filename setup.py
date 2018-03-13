@@ -9,7 +9,7 @@ setup(
     author_email="redara@redhat.com",
     description="library for sending statistics over UDP to collectd servers",
     license="BSD",
-    url="https://github.com/collectd/collectd",
+    url="https://github.com/gluster/gluster-collectd",
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python",

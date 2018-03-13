@@ -3,7 +3,7 @@
 # Simple script to create RPMs for G4S
 
 ## RPM NAME
-RPMNAME=gluster_collectd
+RPMNAME=gluster-collectd
 
 cleanup()
 {
