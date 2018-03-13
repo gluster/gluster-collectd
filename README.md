@@ -11,8 +11,8 @@ Install the python plugin for collectd and also dependency packages. gluster col
   - yum install collectd-python
   - pip install -r gluster-collectd/requirements.txt
 # RPM Installation.
-- #git clone https://github.com/vredara/collectd.git
-- #cd src/gluster-collectd
+- #git clone https://github.com/gluster/gluster-collectd
+- #cd gluster-collectd
 - ./makerpm.sh
 - rpm -ivh build/gluster-collectd.noarch.rpm
 
