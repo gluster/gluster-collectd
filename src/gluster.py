@@ -13,9 +13,18 @@
 #  You should have received a copy of the GNU General Public License along
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+
 import collectd
-from gluster_utils import GlusterStats, get_gluster_cluster_topology
-from gluster_plugins import all
+# try python 3 style, fallback to python 2 importing
+try:
+    from .gluster_utils import GlusterStats, get_gluster_cluster_topology
+except Exception:
+    from gluster_utils import GlusterStats, get_gluster_cluster_topology
+
+try:
+    from .gluster_plugins import all
+except Exception:
+    from gluster_plugins import all
 import socket
 
 

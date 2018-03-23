@@ -13,6 +13,8 @@
 #  You should have received a copy of the GNU General Public License along
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+
+
 import collectd
 import os
 import shlex
@@ -22,8 +24,6 @@ from subprocess import Popen
 import threading
 import traceback
 import psutil
-
-
 from gluster_utils import GlusterStats, CollectdValue
 
 
@@ -50,7 +50,7 @@ class BrickStats(GlusterStats):
             for sub_volume_index, sub_volume_bricks in volume.get(
                 'bricks',
                 {}
-            ).iteritems():
+            ).items():
                 for brick in sub_volume_bricks:
                     brick_hostname = brick['hostname']
                     if (
@@ -77,9 +77,8 @@ class BrickStats(GlusterStats):
 
     def push_io_stats(self):
         io_stats = psutil.disk_io_counters(perdisk=True)
-        for brick, disk in self.local_disks.iteritems():
+        for brick, disk in self.local_disks.items():
             device = disk.replace('/dev/', '').strip()
-            collectd.info("VENKAT - device is %s" % (device))
             if device in io_stats:
                 disk_io = io_stats[device]
                 # push stats to collectd
@@ -159,14 +158,9 @@ class BrickStats(GlusterStats):
                 )
             else:
                 out = stdout.split('\n')[:-1]
-                l = map(
-                    lambda x: dict(x), map(
-                        lambda x: [
+                l = [dict(x) for x in [[
                             e.split('=') for e in x
-                        ],
-                        map(lambda x: x.strip().split('$'), out)
-                    )
-                )
+                        ] for x in [x.strip().split('$') for x in out]]]
                 d = {}
                 for i in l:
                     if i['LVM2_LV_ATTR'][0] == 't':
@@ -191,7 +185,7 @@ class BrickStats(GlusterStats):
         def _get_mounts(mount_path=[]):
             mount_list = self._get_mount_point(mount_path)
             mount_points = self._parse_proc_mounts()
-            if isinstance(mount_list, basestring):
+            if isinstance(mount_list, str):
                 mount_list = [mount_list]
             outList = set(mount_points).intersection(set(mount_list))
             # list comprehension to build dictionary does not work in
@@ -236,7 +230,7 @@ class BrickStats(GlusterStats):
         mount_detail = {}
         if not mount_points:
             return mount_detail
-        for mount, info in mount_points.iteritems():
+        for mount, info in mount_points.items():
             mount_detail[mount] = self._get_stats(mount)
             mount_detail[mount].update(
                 _get_thin_pool_stat(os.path.realpath(info['device']))
@@ -288,7 +282,7 @@ class BrickStats(GlusterStats):
         mount_stats = self.get_mount_stats(path)
         if not mount_stats:
             return None
-        return mount_stats.values()[0]
+        return list(mount_stats.values())[0]
 
     def get_brick_utilization(self):
         self.brick_utilizations = {}
@@ -375,7 +369,7 @@ class BrickStats(GlusterStats):
     def push_brick_stats(self):
         list_values = []
         stats = self.get_brick_utilization()
-        for vol, brick_usages in stats.iteritems():
+        for vol, brick_usages in stats.items():
             num_bricks = len(brick_usages)
             cvalue = CollectdValue(self.plugin,  vol, "num_bricks",
                                    [num_bricks], None)

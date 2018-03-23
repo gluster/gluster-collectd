@@ -1,6 +1,6 @@
-%define _confdir %{_sysconfdir}/collectd.d
-%define _collectdir usr/lib64/collectd/gluster-collectd
-%define _unpackaged_files_terminate_build 0
+%global _confdir %{_sysconfdir}/collectd.d
+%global _collectdir usr/lib64/collectd/gluster-collectd
+%global _unpackaged_files_terminate_build 0
 
 # This is a spec file for gluster-collectd
 # The following values are provided by passing the following arguments
@@ -10,21 +10,22 @@
 
 %{!?_version:%global _version __PKG_VERSION__}
 %{!?_release:%global _release __PKG_RELEASE__}
- 
-Summary  : Red Hat Gluster Collectd Plugin
-License  : GPLv2
+
 Name     : gluster-collectd
 Version  : %{_version}
 Release  : %{_release}%{?dist}
+Summary  : Red Hat Gluster Collectd Plugin
+
+License  : GPLv2
+URL      : https://github.com/gluster/gluster-collectd
 Source0  : gluster-collectd-%{_version}-%{_release}.tar.gz
 BuildArch: noarch
-Group    : Development/Tools
-URL      : https://github.com/gluster/gluster-collectd
-BuildRequires: python
+Requires : python2
+Requires : collectd >= 5.8.0
+Requires : collectd-python >= 5.8.0
+
+BuildRequires: python2
 BuildRequires: python-setuptools
-Requires : python
-Requires : collectd
-Requires : collectd-python
  
 %description
 The gluster plugin for collectd sends metrics to collectd. 
@@ -33,10 +34,9 @@ The gluster plugin for collectd sends metrics to collectd.
 %setup -q -n gluster-collectd-%{_version}
  
 %build
-%{__python} setup.py build
+%{__python2} setup.py build
  
 %install
-rm -rf %{buildroot}
 mkdir -p      %{buildroot}/%{_confdir}/
 mkdir -p      %{buildroot}/usr/share/collectd/
 mkdir -p      %{buildroot}/%{_collectdir}
@@ -52,12 +52,12 @@ install -p -m 0644 README.md %{buildroot}%{_mandir}/man8
 %defattr(-,root,root)
 %{_mandir}/man8/*
 /usr/share/collectd/types.db.gluster
-%exclude /%{_collectdir}/gluster_plugins/*.pyc
-%exclude /%{_collectdir}/gluster_plugins/*.pyo
-%exclude /%{_collectdir}/*.pyc
-%exclude /%{_collectdir}/*.pyo
 /%{_collectdir}/gluster_plugins/*.py
+/%{_collectdir}/gluster_plugins/*.pyc
+/%{_collectdir}/gluster_plugins/*.pyo
 /%{_collectdir}/*.py
+/%{_collectdir}/*.pyc
+/%{_collectdir}/*.pyo
 
 %dir %{_confdir}
 %dir /%{_collectdir}

@@ -42,7 +42,7 @@ gittotar()
         -e "s#__PKG_NAME__#${RPMNAME}#" \
         -e "s#__PKG_VERSION__#${PKG_VERSION}#" \
         ${specfile} > ${specfile}.new
-    mv ${specfile}.new ${specfile}
+     mv ${specfile}.new ${specfile}
 
     # Now create a tar file
     ( cd ${gitarchive_dir} && tar cf - ${SRCTAR_DIR} | gzip -c > ${SRCTAR} )

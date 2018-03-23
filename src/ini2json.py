@@ -14,13 +14,18 @@
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
-from ConfigParser import ConfigParser
-from ConfigParser import DEFAULTSECT
-from ConfigParser import MissingSectionHeaderError
-from ConfigParser import ParsingError
+# try python 3 style, fallback to python 2 importing
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
+
+DEFAULTSECT = configparser.DEFAULTSECT
+MissingSectionHeaderError = configparser.MissingSectionHeaderError
+ParsingError = configparser.ParsingError
 
 
-class StrictConfigParser(ConfigParser):
+class StrictConfigParser(configparser.ConfigParser):
 
     def _read(self, fp, fpname):
         cursect = None                        # None, or a dictionary
@@ -51,7 +56,7 @@ class StrictConfigParser(ConfigParser):
                     sectname = mo.group('header')
                     if sectname in self._sections:
                         raise ValueError('Duplicate section %r' % sectname)
-                    elif sectname == DEFAULTSECT:
+                    elif sectname == configparser.DEFAULTSECT:
                         cursect = self._defaults
                     else:
                         cursect = self._dict()
@@ -102,9 +107,9 @@ class StrictConfigParser(ConfigParser):
 
         # join the multi-line values collected while reading
         all_sections = [self._defaults]
-        all_sections.extend(self._sections.values())
+        all_sections.extend(list(self._sections.values()))
         for options in all_sections:
-            for name, val in options.items():
+            for name, val in list(options.items()):
                 if isinstance(val, list):
                     options[name] = '\n'.join(val)
 

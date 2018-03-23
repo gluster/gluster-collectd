@@ -19,7 +19,7 @@ Install the python plugin for collectd and also dependency packages. gluster col
 # Manual Installation (if rpm is not used)
  - mkdir /usr/lib64/collectd/gluster-collectd
  - copy gluster-collectd/src/*.py dir to /usr/lib64/collectd/gluster-collectd/ dir
- - copy gluster-collectd/conf/python.conf to /etc/collectd.d/ dir
+ - copy gluster-collectd/conf/gluster.conf to /etc/collectd.d/ dir
  - copy gluster-collectd/types/types.db.gluster to /usr/share/collectd/types.db.gluster
 ### Run collectd plugin.
 provide permissions to collectd process to create processes.

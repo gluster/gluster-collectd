@@ -42,7 +42,7 @@ class VolumeStats(GlusterStats):
         for sub_volume_index, sub_volume_bricks in volume.get(
             'bricks',
             {}
-        ).iteritems():
+        ).items():
             for brick in sub_volume_bricks:
                 if brick['hostname'] == self.CONFIG['peer_name']:
                     brick_path = brick['path']

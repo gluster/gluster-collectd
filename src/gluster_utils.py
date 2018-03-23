@@ -15,14 +15,21 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 import psutil
 import os
-import ConfigParser
+# try python 3 style, fallback to python 2 importing
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 import uuid
 import subprocess
 import traceback
 import shlex
 import collectd
-import ini2json
 
+try:
+    from . import ini2json
+except Exception:
+    import ini2json
 
 GLUSTERD_ERROR_MSG = 'Connection failed. '\
     'Please check if gluster daemon is operational.'
@@ -89,8 +96,8 @@ def get_gluster_state_dump():
     except (
         IOError,
         AttributeError,
-        ConfigParser.MissingSectionHeaderError,
-        ConfigParser.ParsingError,
+        configparser.MissingSectionHeaderError,
+        configparser.ParsingError,
         ValueError
     ):
         return ret_val, traceback.format_exc()
@@ -102,7 +109,7 @@ def parse_get_state(get_state_json):
         cluster_peers = []
         processed_peer_indexes = []
         peers = get_state_json['Peers']
-        for key, value in peers.iteritems():
+        for key, value in peers.items():
             peer_index = key.split('.')[0].split('peer')[1]
             if peer_index not in processed_peer_indexes:
                 cluster_peers.append({'host_name': peers[
@@ -125,7 +132,7 @@ def parse_get_state(get_state_json):
         processed_vol_indexes = []
         vols = []
         volumes = get_state_json['Volumes']
-        for key, value in volumes.iteritems():
+        for key, value in volumes.items():
             vol_index = key.split('.')[0].split('volume')[1]
             if vol_index not in processed_vol_indexes:
                 volume = {
