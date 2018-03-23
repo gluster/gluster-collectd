@@ -7,18 +7,16 @@
 # to rpmbuild.  For example:
 #         --define "_version 1.0" --define "_release 1"
 #
-
-%{!?_version:%global _version __PKG_VERSION__}
 %{!?_release:%global _release __PKG_RELEASE__}
 
 Name     : gluster-collectd
-Version  : %{_version}
-Release  : %{_release}%{?dist}
+Version  : 1.0.0
+Release  : 0%{?dist}
 Summary  : Red Hat Gluster Collectd Plugin
 
 License  : GPLv2
 URL      : https://github.com/gluster/gluster-collectd
-Source0  : gluster-collectd-%{_version}-%{_release}.tar.gz
+Source0  : gluster-collectd-%{version}-%{_release}.tar.gz
 BuildArch: noarch
 Requires : python2
 Requires : collectd >= 5.8.0
@@ -31,7 +29,7 @@ BuildRequires: python-setuptools
 The gluster plugin for collectd sends metrics to collectd. 
  
 %prep
-%setup -q -n gluster-collectd-%{_version}
+%setup -q -n gluster-collectd-%{version}
  
 %build
 %{__python2} setup.py build
