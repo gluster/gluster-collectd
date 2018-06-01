@@ -16,7 +16,7 @@ Summary  : Red Hat Gluster Collectd Plugin
 
 License  : GPLv2
 URL      : https://github.com/gluster/gluster-collectd
-Source0  : gluster-collectd-%{version}-%{_release}.tar.gz
+Source0  : https://github.com/gluster/gluster-collectd/archives/gluster-collectd-%{version}-%{_release}.tar.gz
 BuildArch: noarch
 Requires : python2
 Requires : collectd >= 5.8.0
