@@ -64,5 +64,8 @@ install -p -m 0644 README.md %{buildroot}%{_mandir}/man8
 %config(noreplace) %{_confdir}/gluster.conf.template
 
 %changelog
+* Fri Jun 1 2018 Venkata R Edara <redara@redhat.com> 1.0.0-1
+- Fixed the spec file issue 1.0.0-1
+
 * Wed Jan 31 2018 Venkata R Edara <redara@redhat.com> 1.0.0-0
 - Initial version of gluster collectd plugin 1.0.0-0
