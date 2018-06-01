@@ -52,23 +52,6 @@ def exec_command(cmd_str):
         return None, except_traceback
 
 
-def get_pids(name):
-    output, error = exec_command("pidof %s" % (name))
-    pids = []
-    if len(output) > 0:
-        for proc in output.split():
-            pid = int(proc.strip())
-            pids.append(pid)
-    return pids
-
-
-def get_cpu_memory_metrics(pid):
-    ps = psutil.Process(pid)
-    cpu = ps.cpu_percent()
-    memory = ps.memory_info()
-    return (cpu, memory)
-
-
 def get_gluster_state_dump():
     global GLUSTERD_ERROR_MSG
     ret_val = {}
@@ -110,6 +93,8 @@ def parse_get_state(get_state_json):
         processed_peer_indexes = []
         peers = get_state_json['Peers']
         for key, value in peers.items():
+            if key.startswith('peer') is False:
+                continue
             peer_index = key.split('.')[0].split('peer')[1]
             if peer_index not in processed_peer_indexes:
                 cluster_peers.append({'host_name': peers[
@@ -133,6 +118,8 @@ def parse_get_state(get_state_json):
         vols = []
         volumes = get_state_json['Volumes']
         for key, value in volumes.items():
+            if key.startswith('volume') is False:
+                continue
             vol_index = key.split('.')[0].split('volume')[1]
             if vol_index not in processed_vol_indexes:
                 volume = {

@@ -1,4 +1,6 @@
 TypesDB     "/usr/share/collectd/types.db.gluster"
+TypesDB     "/usr/share/collectd/types.db"
+
 LoadPlugin python
 <Plugin python>
         ModulePath "/usr/lib64/collectd/gluster-collectd/"
@@ -7,5 +9,6 @@ LoadPlugin python
         Import "gluster"
 
         <Module gluster>
+	  peer_name {{ hostname }}
         </Module>
 </Plugin>

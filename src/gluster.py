@@ -15,6 +15,8 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import collectd
+import signal
+
 # try python 3 style, fallback to python 2 importing
 try:
     from .gluster_utils import GlusterStats, get_gluster_cluster_topology
@@ -58,5 +60,9 @@ def read_func():
     for plugin in list_plugins:
         plugin.run()
 
+def restore_sigchld():
+    signal.signal(signal.SIGCHLD, signal.SIG_DFL)
+
+collectd.register_init(restore_sigchld)
 collectd.register_config(config_func)
 collectd.register_read(read_func)

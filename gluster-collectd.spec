@@ -11,7 +11,7 @@
 
 Name     : gluster-collectd
 Version  : 1.0.0
-Release  : 0%{?dist}
+Release  : 1%{?dist}
 Summary  : Red Hat Gluster Collectd Plugin
 
 License  : GPLv2
@@ -23,6 +23,7 @@ Requires : collectd >= 5.8.0
 Requires : collectd-python >= 5.8.0
 
 BuildRequires: python2
+BuildRequires: python2-rpm-macros
 BuildRequires: python-setuptools
  
 %description
@@ -38,9 +39,9 @@ The gluster plugin for collectd sends metrics to collectd.
 mkdir -p      %{buildroot}/%{_confdir}/
 mkdir -p      %{buildroot}/usr/share/collectd/
 mkdir -p      %{buildroot}/%{_collectdir}
-cp -r conf/* %{buildroot}/%{_confdir}/
-cp -r types/* %{buildroot}/usr/share/collectd/
-cp -r ./build/lib/src/*  %{buildroot}/%{_collectdir}/
+cp -rp conf/* %{buildroot}/%{_confdir}/
+cp -rp types/* %{buildroot}/usr/share/collectd/
+cp -rp ./build/lib/src/*  %{buildroot}/%{_collectdir}/
 
 # Man Pages
 install -d -m 755 %{buildroot}%{_mandir}/man8
@@ -60,7 +61,7 @@ install -p -m 0644 README.md %{buildroot}%{_mandir}/man8
 %dir %{_confdir}
 %dir /%{_collectdir}
 %dir /%{_collectdir}/gluster_plugins
-%config(noreplace) %{_confdir}/gluster.conf
+%config(noreplace) %{_confdir}/gluster.conf.template
 
 %changelog
 * Wed Jan 31 2018 Venkata R Edara <redara@redhat.com> 1.0.0-0

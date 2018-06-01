@@ -57,7 +57,7 @@ class VolumeStats(GlusterStats):
         list_values = []
         for brick_path in heal_entries:
 
-            t_name = "brick_healed_cnt"
+            t_name = "brick_heal_entries"
             healed_cnt = heal_entries[brick_path]
             cvalue = CollectdValue(self.plugin, volname, t_name,
                                    [healed_cnt], brick_path)

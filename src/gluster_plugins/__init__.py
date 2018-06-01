@@ -1,1 +1,1 @@
-all = ["process_stats.ProcessStats", "brick_stats.BrickStats", "volume_stats.VolumeStats"]
+all = ["brick_stats.BrickStats", "volume_stats.VolumeStats"]

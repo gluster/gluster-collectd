@@ -75,33 +75,6 @@ class BrickStats(GlusterStats):
                     if partition.mountpoint == mount_point:
                         self.local_disks[brick_path] = partition.device
 
-    def push_io_stats(self):
-        io_stats = psutil.disk_io_counters(perdisk=True)
-        for brick, disk in self.local_disks.items():
-            device = disk.replace('/dev/', '').strip()
-            if device in io_stats:
-                disk_io = io_stats[device]
-                # push stats to collectd
-                read_bytes, write_bytes = disk_io.read_bytes,\
-                    disk_io.write_bytes
-                cvalue = CollectdValue(self.plugin, brick,
-                                       "disk_octets",
-                                       [read_bytes, write_bytes], None)
-                cvalue.dispatch()
-
-                read_time, write_time = disk_io.read_time,\
-                    disk_io.write_time
-                cvalue = CollectdValue(self.plugin, brick, "disk_time",
-                                       [read_time, write_time], None)
-                cvalue.dispatch()
-
-                read_count, write_count = disk_io.read_count,\
-                    disk_io.write_count
-                cvalue = CollectdValue(self.plugin, brick, "disk_ops",
-                                       [read_count, write_count], None
-                                       )
-                cvalue.dispatch()
-
     def _parse_proc_mounts(self, filter=True):
         mount_points = {}
         with open('/proc/mounts', 'r') as f:
@@ -301,38 +274,6 @@ class BrickStats(GlusterStats):
         for thread in threads:
             del thread
         return self.brick_utilizations
-        '''
-        volumes = self.CLUSTER_TOPOLOGY.get('volumes', [])
-        threads = []
-        for volume in volumes:
-            for sub_volume_index, sub_volume_bricks in volume.get(
-                'bricks',
-                {}
-            ).iteritems():
-                for brick in sub_volume_bricks:
-                    brick_hostname = brick['hostname']
-                    # Check if current brick is from localhost else utilization
-                    # of brick from some other host can't be computed here..
-                    if (
-                        brick_hostname == socket.gethostbyname(
-                            self.CONFIG['peer_name']
-                        ) or
-                        brick_hostname == self.CONFIG['peer_name']
-                    ):
-                        thread = threading.Thread(
-                            target=self.calc_brick_utilization,
-                            args=(volume['name'], brick,)
-                        )
-                        thread.start()
-                        threads.append(
-                            thread
-                        )
-        for thread in threads:
-            thread.join(1)
-        for thread in threads:
-            del thread
-        return self.brick_utilizations
-    '''
 
     def calc_brick_utilization(self, vol_name, brick):
         try:
@@ -364,7 +305,6 @@ class BrickStats(GlusterStats):
 
     def run(self):
         self.push_brick_stats()
-        self.push_io_stats()
 
     def push_brick_stats(self):
         list_values = []
@@ -455,7 +395,7 @@ class BrickStats(GlusterStats):
                 thinpool_size = brick_usage.get('thinpool_size')
                 if thinpool_size:
                     cvalue = CollectdValue(self.plugin, brick_path, t_name,
-                                           [thinpool_size], "size")
+                                           [thinpool_size], "total")
                     list_values.append(cvalue)
 
         for value in list_values:
