@@ -9,6 +9,6 @@ LoadPlugin python
         Import "gluster"
 
         <Module gluster>
-	  peer_name {{ hostname }}
+	  peer_name "{{ hostname }}"
         </Module>
 </Plugin>
