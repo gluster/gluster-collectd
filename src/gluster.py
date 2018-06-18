@@ -38,13 +38,11 @@ def config_func(config):
     GlusterStats.CONFIG = {c.key: c.values[0] for c in config.children}
     if 'peer_name' not in GlusterStats.CONFIG:
         hostname = socket.gethostname()
-        ''' lets split hostname.domainname '''
-        host_domain_fields = hostname.split('.')
-        GlusterStats.CONFIG['peer_name'] = host_domain_fields[0]
+        GlusterStats.CONFIG['peer_name'] = hostname
+    GlusterStats.CLUSTER_TOPOLOGY = get_gluster_cluster_topology()
 
 
 def read_func():
-    GlusterStats.CLUSTER_TOPOLOGY = get_gluster_cluster_topology()
     global threads
     global list_plugins
     # load plugins here
@@ -59,6 +57,7 @@ def read_func():
     # run the plugin
     for plugin in list_plugins:
         plugin.run()
+
 
 def restore_sigchld():
     signal.signal(signal.SIGCHLD, signal.SIG_DFL)
