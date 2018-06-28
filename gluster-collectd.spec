@@ -6,7 +6,8 @@
 # The following values are provided by passing the following arguments
 # to rpmbuild.  For example:
 #         --define "_version 1.0" --define "_release 1"
-#
+# we support Python 2 version as of now, Testing has to be done for supporting python 3
+# and dependencies has also to be tested.
 %{!?_release:%global _release __PKG_RELEASE__}
 
 Name     : gluster-collectd
@@ -33,14 +34,14 @@ The gluster plugin for collectd sends metrics to collectd.
 %setup -q -n gluster-collectd-%{version}
  
 %build
-%{__python2} setup.py build
+%py2_build
  
 %install
 mkdir -p      %{buildroot}/%{_confdir}/
-mkdir -p      %{buildroot}/usr/share/collectd/
+mkdir -p      %{buildroot}/%{_datadir}/collectd/
 mkdir -p      %{buildroot}/%{_collectdir}
 cp -rp conf/* %{buildroot}/%{_confdir}/
-cp -rp types/* %{buildroot}/usr/share/collectd/
+cp -rp types/* %{buildroot}%{_datadir}/collectd/
 cp -rp ./build/lib/src/*  %{buildroot}/%{_collectdir}/
 
 # Man Pages
@@ -50,7 +51,7 @@ install -p -m 0644 README.md %{buildroot}%{_mandir}/man8
 %files
 %defattr(-,root,root)
 %{_mandir}/man8/*
-/usr/share/collectd/types.db.gluster
+%{_datadir}/collectd/types.db.gluster
 /%{_collectdir}/gluster_plugins/*.py
 /%{_collectdir}/gluster_plugins/*.pyc
 /%{_collectdir}/gluster_plugins/*.pyo
