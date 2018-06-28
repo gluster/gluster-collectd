@@ -34,7 +34,7 @@ The gluster plugin for collectd sends metrics to collectd.
 %setup -q -n gluster-collectd-%{version}
  
 %build
-%py2_build
+%{__python2} setup.py build
  
 %install
 mkdir -p      %{buildroot}/%{_confdir}/
