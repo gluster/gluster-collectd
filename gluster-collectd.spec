@@ -20,8 +20,8 @@ URL      : https://github.com/gluster/gluster-collectd
 Source0  : https://github.com/gluster/gluster-collectd/archives/gluster-collectd-%{version}-%{_release}.tar.gz
 BuildArch: noarch
 Requires : python2
-Requires : collectd >= 5.8.0
-Requires : collectd-python >= 5.8.0
+Requires : collectd
+Requires : collectd-python
 
 BuildRequires: python2
 BuildRequires: python2-rpm-macros

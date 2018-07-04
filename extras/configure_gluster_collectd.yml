@@ -1,0 +1,39 @@
+---
+- name: Install and configure gluster collectd package
+  hosts: all
+  vars:
+    copr_url: "https://copr-be.cloud.fedoraproject.org/results/redara"
+    repo: "gluster-collectd/fedora-27-x86_64/00774074-gluster-collectd"
+    package: "gluster-collectd-1.0.0-1.fc27.noarch.rpm"
+    gluster_collectd_rpm: "{{ copr_url }}/{{ repo }}/{{ package }}"
+    collectd_conf_dir: "/etc/collectd.d"
+    hostname: "{{ brick_ip | default(ansible_hostname) }}"
+  tasks:
+    - name: checking dependency packages are present
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items: 
+        - collectd
+        - collectd-python
+        - python-psutil
+    
+    - name: download and install gluster-collectd rpm
+      yum:
+        name: "{{ gluster_collectd_rpm }}"
+        state: present
+      register: result
+
+    - name: Configure the gluster.conf template
+      template:
+        src: "{{ collectd_conf_dir }}/gluster.conf.template"
+        dest: "{{ collectd_conf_dir }}/gluster.conf.template"
+      notify:
+        - restart_collectd
+      when: result is changed
+   
+  handlers:
+    - name: restart_collectd
+      service:
+        name: collectd
+        state: restarted
