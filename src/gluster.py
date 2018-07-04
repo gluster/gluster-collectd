@@ -30,9 +30,6 @@ except Exception:
 import socket
 
 
-list_plugins = []
-
-
 def config_func(config):
     # collectd.info("gluster config received")
     GlusterStats.CONFIG = {c.key: c.values[0] for c in config.children}
@@ -44,7 +41,7 @@ def config_func(config):
 
 def read_func():
     global threads
-    global list_plugins
+    list_plugins = []
     # load plugins here
     for mod in all:
         full_name = "gluster_plugins.%s" % (mod)
