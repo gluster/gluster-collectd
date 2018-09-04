@@ -16,17 +16,42 @@
 import collectd
 import os
 # import threading
-from gluster_utils import GlusterStats, CollectdValue
-
+from gluster_utils import GlusterStats, exec_command, CollectdValue
 
 ret_val = {}
 
 
 class VolumeStats(GlusterStats):
     def __init__(self):
+        # key is volname value is mounted path
+        self.dict_mounts = {}
         GlusterStats.__init__(self)
 
-    def get_heal_entries(self, brick_path):
+    def get_local_mounts(self):
+        with open('/proc/mounts') as f:
+            mounts = f.readlines()
+            for mount in mounts:
+                fields = mount.split()
+                if len(fields) > 3 and 'fuse.glusterfs' in fields[2]:
+                    vol_fields = fields[0].split(':')
+                    if len(vol_fields) > 1:
+                        vol_name = vol_fields[1]
+                        self.dict_mounts[vol_name[1:]] = fields[1]
+
+    def get_vol_capacity(self, volname):
+        if not self.dict_mounts:
+            self.get_local_mounts()
+        vol = volname['name']
+        if vol in self.dict_mounts:
+            path = self.dict_mounts[vol]
+            cmd = "df %s" % (path)
+            stdout, stderr = exec_command(cmd)
+            if stdout:
+                device, size, used, available, percent, mountpoint = \
+                    stdout.split("\n")[1].split()
+                return (size, used, available)
+        return (None, None, None)
+
         heal_dir = os.path.join(brick_path, ".glusterfs/indices/xattrop")
         heal_entries = 0
         try:
@@ -37,50 +62,20 @@ class VolumeStats(GlusterStats):
             collectd.info("%s doesn't exist, is gluster running" % (heal_dir))
         return heal_entries
 
-    def get_volume_heal_info(self, volume):
-        entries = {}
-        for sub_volume_index, sub_volume_bricks in volume.get(
-            'bricks',
-            {}
-        ).items():
-            for brick in sub_volume_bricks:
-                if brick['hostname'] == self.CONFIG['peer_name']:
-                    brick_path = brick['path']
-                    num_entries = self.get_heal_entries(brick_path)
-                    entries[brick_path] = num_entries
-        return entries
-
-    def get_heal_info(self, volume):
-        heal_entries = self.get_volume_heal_info(volume)
-        volname = volume['name']
-        hostname = self.CONFIG['peer_name']
-        list_values = []
-        for brick_path in heal_entries:
-
-            t_name = "brick_heal_entries"
-            healed_cnt = heal_entries[brick_path]
-            cvalue = CollectdValue(self.plugin, volname, t_name,
-                                   [healed_cnt], brick_path)
-            cvalue.hostname = hostname
-            list_values.append(cvalue)
-        return list_values
-
     def run(self):
-        for volume in self.CLUSTER_TOPOLOGY.get('volumes', []):
-            if 'Replicate' in volume.get('type', ''):
-                list_values = self.get_heal_info(volume)
-                for collectd_value in list_values:
-                    collectd_value.dispatch()
+        if not os.path.exists('/tmp/collectd-master'):
+            return
 
-                # thread = threading.Thread(
-                # target=get_heal_info,
-                # args=(volume, CONFIG['integration_id'],)
-                # )
-                # thread.start()
-                # threads.append(
-                # thread
-                # )
-                # for thread in threads:
-                #    thread.join(1)
-                # for thread in threads:
-                #    del thread
+        for volume in self.CLUSTER_TOPOLOGY.get('volumes', []):
+            size, used, avail = self.get_vol_capacity(volume)
+            if not size or not used or not avail:
+                return
+            t_name = "vol_size_bytes"
+            cvalue = CollectdValue(self.plugin, volume['name'], t_name,
+                                   [size], None)
+            cvalue.dispatch()
+
+            t_name = "vol_free_bytes"
+            cvalue = CollectdValue(self.plugin, volume['name'], t_name,
+                                   [avail], None)
+            cvalue.dispatch()

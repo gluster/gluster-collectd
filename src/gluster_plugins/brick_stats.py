@@ -303,12 +303,27 @@ class BrickStats(GlusterStats):
                 )
             )
 
+    def get_heal_entries(self, brick_path):
+        heal_dir = os.path.join(brick_path, ".glusterfs/indices/xattrop")
+        heal_entries = 0
+        try:
+            for entry in os.listdir(heal_dir):
+                if "xattrop" not in entry:
+                    heal_entries += 1
+        except OSError:
+            collectd.info("%s doesn't exist, is gluster running" % (heal_dir))
+        return heal_entries
+
     def run(self):
         self.push_brick_stats()
 
     def push_brick_stats(self):
         list_values = []
         stats = self.get_brick_utilization()
+        volumes = self.CLUSTER_TOPOLOGY.get('volumes', [])
+
+        replicate_vols = [volume['name'] for volume in volumes if 'Replicate' in
+                          volume.get('type', '')]
         for vol, brick_usages in stats.items():
             num_bricks = len(brick_usages)
             cvalue = CollectdValue(self.plugin,  vol, "num_bricks",
@@ -317,6 +332,13 @@ class BrickStats(GlusterStats):
 
             for brick_usage in brick_usages:
                 brick_path = brick_usage.get('brick_path')
+                heal_entries = self.get_heal_entries(brick_path)
+                if vol in replicate_vols:
+                    t_name = "brick_heal_entries"
+                    cvalue = CollectdValue(self.plugin, brick_path, t_name,
+                                           [heal_entries], vol)
+                    list_values.append(cvalue)
+
                 t_name = "brick_connections"
                 connections_count = brick_usage.get('connections_count', 0)
                 if connections_count:
