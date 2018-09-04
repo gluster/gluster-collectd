@@ -13,7 +13,6 @@
 #  You should have received a copy of the GNU General Public License along
 #  with this program; if not, write to the Free Software Foundation, Inc.,
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-import collectd
 import os
 # import threading
 from gluster_utils import GlusterStats, exec_command, CollectdValue
@@ -51,16 +50,6 @@ class VolumeStats(GlusterStats):
                     stdout.split("\n")[1].split()
                 return (size, used, available)
         return (None, None, None)
-
-        heal_dir = os.path.join(brick_path, ".glusterfs/indices/xattrop")
-        heal_entries = 0
-        try:
-            for entry in os.listdir(heal_dir):
-                if "xattrop" not in entry:
-                    heal_entries += 1
-        except OSError:
-            collectd.info("%s doesn't exist, is gluster running" % (heal_dir))
-        return heal_entries
 
     def run(self):
         if not os.path.exists('/tmp/collectd-master'):
