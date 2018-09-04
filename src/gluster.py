@@ -36,11 +36,10 @@ def config_func(config):
     if 'peer_name' not in GlusterStats.CONFIG:
         hostname = socket.gethostname()
         GlusterStats.CONFIG['peer_name'] = hostname
-    GlusterStats.CLUSTER_TOPOLOGY = get_gluster_cluster_topology()
 
 
 def read_func():
-    global threads
+    GlusterStats.CLUSTER_TOPOLOGY = get_gluster_cluster_topology()
     list_plugins = []
     # load plugins here
     for mod in all:
