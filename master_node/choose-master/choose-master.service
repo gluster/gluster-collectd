@@ -1,0 +1,13 @@
+[Unit]
+Description=Choose Master Node for Metrics
+After=ovirt-engine.service
+
+[Service]
+Type=service
+User=root
+Group=root
+ExecStart=/usr/local/bin/choose_master.py -u "{{user}}" -d "{{domain}}" -p "{{passwd}" -k "{{keyfile}}" -c "{{certfile}}"
+
+[Install]
+WantedBy=multi-user.target
+
