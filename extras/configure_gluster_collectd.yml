@@ -3,7 +3,7 @@
   hosts: all
   vars:
     gluster_collectd_rpm: "https://copr-be.cloud.fedoraproject.org/results/redara\
-               /gluster-collectd/fedora-27-x86_64/00774074-gluster-collectd\
+               /gluster-collectd/fedora-27-x86_64/00795761-gluster-collectd\
                /gluster-collectd-1.0.0-1.fc27.noarch.rpm"
     collectd_conf_dir: "/etc/collectd.d"
     hostname: "{{ brick_ip | default(ansible_hostname) }}"
