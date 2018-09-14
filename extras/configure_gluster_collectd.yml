@@ -32,3 +32,43 @@
       service:
         name: collectd
         state: restarted
+
+- name: Install choose-master package to elect master node 
+  hosts: ovirt-engine
+  vars:
+    choose_master_rpm: "https://copr-be.cloud.fedoraproject.org/results/redara\
+                       /gluster-collectd/fedora-27-x86_64/00798077-choose-master\
+                       /choose-master-1.0.0-1.fc27.noarch.rpm"
+    system_dir: "/usr/lib/systemd/system"
+    user: "admin"
+    domain: "internal"
+    passwd: "admin"
+    certfile: "/etc/pki/ovirt-engine/ca.pem"
+    keyfile: "/etc/pki/ovirt-engine/keys/engine_id_rsa"
+  tasks:
+    - name : Install choose-master package 
+      yum:
+        name: "{{ choose_master_rpm }}"
+        state: present
+
+    - name: configure the choose-master.service 
+      template:
+        src : "/tmp/choose-master.service"
+        dest: "{{ system_dir }}/choose-master.service"
+    - name: give execute permissions to choose_master.py
+      file:
+        dest: /usr/local/bin/choose_master.py
+        mode: a+x
+    - name: enable the choose-master.service
+      systemd:
+        name: choose-master
+        enabled: yes
+        masked: no
+    - name: reload the systemd 
+      systemd:
+        daemon_reload: yes
+    - name: start the choose-master service
+      service:
+        name: choose-master
+        state: started
+
