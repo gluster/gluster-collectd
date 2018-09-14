@@ -11,7 +11,7 @@
 
 Name     : choose-master
 Version  : 1.0.0
-Release  : 1
+Release  : 1%{?dist}
 Summary  : python program to choose ovirt node
 
 License  : GPLv2
@@ -19,7 +19,7 @@ URL      : https://github.com/gluster/gluster-collectd/master_node
 Source0  : https://github.com/gluster/gluster-collectd/archives/choose-master-%{version}.tar.gz
 BuildArch: noarch
 Requires : python2
-Requires : ovirt-engine-sdk-python
+Requires : python-ovirt-engine-sdk4
 
 BuildRequires: python2
 BuildRequires: python2-rpm-macros

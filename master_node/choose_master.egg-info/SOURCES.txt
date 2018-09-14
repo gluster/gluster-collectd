@@ -1,8 +1,0 @@
-MANIFEST.in
-setup.py
-choose-master/choose-master.service
-choose-master/choose_master.py
-choose_master.egg-info/PKG-INFO
-choose_master.egg-info/SOURCES.txt
-choose_master.egg-info/dependency_links.txt
-choose_master.egg-info/top_level.txt
